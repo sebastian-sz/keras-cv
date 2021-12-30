@@ -28,7 +28,12 @@ class RandomMixUp(layers.Layer):
         sample_beta = tf.random.gamma(shape, 1.0, beta=beta)
         return sample_alpha / (sample_alpha + sample_beta)
 
-    def call(self, images, labels):
+    def call(self, inputs):
+        """
+        Args:
+            inputs: tuple containing a Tensor pair of the images and corresponding labels.
+        """
+        images, labels = inputs
         augment_cond = tf.less(
             tf.random.uniform(shape=[], minval=0.0, maxval=1.0), self.probability
         )
