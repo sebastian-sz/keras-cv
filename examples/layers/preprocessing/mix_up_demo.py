@@ -15,9 +15,10 @@ BATCH = 16
 AUTOTUNE = tf.data.AUTOTUNE
 
 
-def resize(image, label):
+def resize(image, label, num_classes=10):
     image = tf.cast(image, tf.float32)
     image = tf.image.resize(image, (IMG_SIZE, IMG_SIZE))
+    label = tf.one_hot(label, num_classes)
     return image, label
 
 
@@ -28,7 +29,9 @@ def main():
     num_classes = ds_info.features["label"].num_classes
 
     train_ds = (
-        train_ds.map(resize).shuffle(10 * BATCH).batch(BATCH, drop_remainder=True)
+        train_ds.map(lambda x, y: resize(x, y, num_classes=num_classes))
+        .shuffle(10 * BATCH)
+        .batch(BATCH, drop_remainder=True)
     )
     mixup = RandomMixUp(num_classes=num_classes)
     train_ds = train_ds.map(lambda x, y: mixup((x, y)), num_parallel_calls=AUTOTUNE)
