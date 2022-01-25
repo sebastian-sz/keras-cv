@@ -11,6 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import tensorflow as tf
 
-from keras_cv.metrics.coco.recall import COCORecall
-from keras_cv.metrics.coco.mean_average_precision import COCOMeanAveragePrecision
+from keras_cv.metrics.coco.base import COCOBase
+
+
+class COCOMeanAveragePrecision(COCOBase):
+    def result(self):
+        pass

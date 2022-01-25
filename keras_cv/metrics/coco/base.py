@@ -87,7 +87,7 @@ class COCOBase(keras.metrics.Metric):
         self.false_positives.assign(tf.zeros_like(self.false_positives))
         self.ground_truth_boxes.assign(tf.zeros_like(self.ground_truth_boxes))
 
-    @tf.function()
+    @tf.function(jit_compile=True)
     def update_state(self, y_true, y_pred, sample_weight=None):
         """
         Args:
