@@ -18,4 +18,4 @@ from keras_cv.metrics.coco.base import COCOBase
 
 class COCOMeanAveragePrecision(COCOBase):
     def result(self):
-        pass
+        return 0.0
