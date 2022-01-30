@@ -1,4 +1,4 @@
 #!/bin/bash
 isort --sl .
-black .
+black --line-length 85 .
 

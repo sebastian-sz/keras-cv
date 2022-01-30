@@ -1,4 +1,4 @@
-"""random_cutout_demo.py shows how to use the RandomCutout preprocessing layer.
+"""random_rand_augment_demo.py shows how to use the RandomCutout preprocessing layer.
 
 Operates on the oxford_flowers102 dataset.  In this script the flowers
 are loaded, then are passed through the preprocessing layers.
@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import tensorflow_datasets as tfds
 
-from keras_cv.layers import preprocessing
+import keras_cv.layers.preprocessing
 
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 64
@@ -33,14 +33,11 @@ def main():
         .shuffle(10 * BATCH_SIZE)
         .batch(BATCH_SIZE)
     )
-    random_cutout = preprocessing.RandomCutout(
-        height_factor=(0.3, 0.9),
-        width_factor=64,
-        fill_mode="gaussian_noise",
-        rate=1.0,
+    rand_augment = keras_cv.layers.preprocessing.RandAugment(
+        num_layers=3, magnitude=10.0
     )
     train_ds = train_ds.map(
-        lambda x, y: (random_cutout(x), y), num_parallel_calls=tf.data.AUTOTUNE
+        lambda x, y: (rand_augment(x), y), num_parallel_calls=tf.data.AUTOTUNE
     )
 
     for images, labels in train_ds.take(1):

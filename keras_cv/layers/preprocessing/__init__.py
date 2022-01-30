@@ -14,4 +14,5 @@
 
 from keras_cv.layers.preprocessing.cut_mix import CutMix
 from keras_cv.layers.preprocessing.mix_up import MixUp
+from keras_cv.layers.preprocessing.rand_augment import RandAugment
 from keras_cv.layers.preprocessing.random_cutout import RandomCutout

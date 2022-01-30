@@ -32,7 +32,9 @@ class COCORecallTest(tf.test.TestCase):
         )
 
         # These would match if they were in the area range
-        y_true = np.array([[[0, 0, 10, 10, 1], [5, 5, 10, 10, 1]]]).astype(np.float32)
+        y_true = np.array([[[0, 0, 10, 10, 1], [5, 5, 10, 10, 1]]]).astype(
+            np.float32
+        )
         y_pred = np.array([[[0, 0, 10, 10, 1, 1.0], [5, 5, 10, 10, 1, 0.9]]]).astype(
             np.float32
         )
@@ -50,7 +52,9 @@ class COCORecallTest(tf.test.TestCase):
         )
 
         # These would match if they were in the area range
-        y_true = np.array([[[0, 0, 10, 10, 1], [5, 5, 10, 10, 1]]]).astype(np.float32)
+        y_true = np.array([[[0, 0, 10, 10, 1], [5, 5, 10, 10, 1]]]).astype(
+            np.float32
+        )
         y_pred = np.array([[[0, 0, 10, 10, 1, 1.0], [5, 5, 10, 10, 1, 0.9]]]).astype(
             np.float32
         )
