@@ -20,6 +20,7 @@ class MeanAveragePrecisionTest(tf.test.TestCase):
         Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.633
         Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.689
     """
+
     def test_mean_average_precision_correctness_large(self):
         y_true, y_pred, categories = load_samples(SAMPLE_FILE)
 
@@ -105,6 +106,7 @@ class MeanAveragePrecisionTest(tf.test.TestCase):
         mean_average_precision.update_state(y_true, y_pred)
         result = mean_average_precision.result().numpy()
         self.assertAlmostEqual(result, 0.729, delta=0.05)
+
 
 def load_samples(fname):
     npzfile = np.load(fname)
