@@ -60,24 +60,24 @@ class COCOBase(keras.metrics.Metric):
         self.max_detections = max_detections
 
         # Initialize result counters
-        num_thresholds = len(self._user_iou_thresholds)
-        num_categories = len(category_ids)
+        self.num_thresholds = len(self._user_iou_thresholds)
+        self.num_categories = len(category_ids)
 
         self.true_positives = self.add_weight(
             name="true_positives",
-            shape=(num_thresholds, num_categories),
+            shape=(self.num_thresholds, self.num_categories),
             dtype=tf.float32,
             initializer=initializers.Zeros(),
         )
         self.false_positives = self.add_weight(
             name="false_positives",
-            shape=(num_thresholds, num_categories),
+            shape=(self.num_thresholds, self.num_categories),
             dtype=tf.float32,
             initializer=initializers.Zeros(),
         )
         self.ground_truth_boxes = self.add_weight(
             name="ground_truth_boxes",
-            shape=(num_categories,),
+            shape=(self.num_categories,),
             dtype=tf.float32,
             initializer=initializers.Zeros(),
         )
@@ -101,8 +101,8 @@ class COCOBase(keras.metrics.Metric):
             )
         num_images = tf.shape(y_true)[0]
 
-        num_thresholds = tf.shape(self.iou_thresholds)[0]
-        num_categories = tf.shape(self.category_ids)[0]
+        num_thresholds = self.num_thresholds
+        num_categories = self.num_categories
 
         # Sort by bbox.CONFIDENCE to make maxDetections easy to compute.
         y_pred = utils.sort_bboxes(y_pred, axis=bbox.CONFIDENCE)
