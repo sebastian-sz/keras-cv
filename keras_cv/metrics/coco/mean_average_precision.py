@@ -40,16 +40,27 @@ class COCOMeanAveragePrecision(COCOBase):
         n_present_categories = tf.math.reduce_sum(
             tf.cast(present_values, tf.float32), axis=-1
         )
+        if n_present_categories == 0:
+            return 0.
 
         recalls = tf.math.divide_no_nan(
             # Broadcast ground truths to [num_thresholds, num_categories]
             self.true_positives, self.ground_truth_boxes[None, :]
         )
+        recalls = tf.reverse(recalls, axis=[0])
+        
         precisions = tf.math.divide_no_nan(self.true_positives, self.false_positives + self.true_positives)
+        precisions = tf.reverse(precisions, axis=[0])
 
         precisions_at_recall  = tf.TensorArray(tf.float32, size=self.num_categories*self.num_recall_thresholds)
         for category_i in tf.range(self.num_categories):
             inds = tf.searchsorted(recalls[:, category_i], self.recall_thresholds, side='left')
+
+            tf.print("self.recall_thresholds", self.recall_thresholds)
+            tf.print("recalls[:, category_i]", recalls[:, category_i])
+            tf.print("precisions[:, category_i]", precisions[:, category_i])
+            tf.print("Inds", inds)
+
             for recall_i in tf.range(self.num_recall_thresholds):
                 if recall_i > tf.shape(inds)[0]:
                     break
@@ -61,6 +72,12 @@ class COCOMeanAveragePrecision(COCOBase):
 
         precisions_at_recall = tf.reshape(precisions_at_recall.stack(), (self.num_recall_thresholds, self.num_categories))
         # This isn't the real way to compute the metric, just a hack to test the rest of the logic.
+        tf.print('precisions_at_recall', precisions_at_recall)
+
         average_over_categories = tf.math.reduce_sum(precisions_at_recall, axis=-1)/n_present_categories
+        tf.print('average_over_categories', average_over_categories)
+        tf.print('average_over_categories.shape', average_over_categories.shape)
+
         average_over_thresholds = tf.math.reduce_mean(average_over_categories)
+        tf.print('average_over_thresholds', average_over_thresholds)
         return average_over_thresholds

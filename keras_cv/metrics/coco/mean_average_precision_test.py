@@ -18,9 +18,10 @@ import tensorflow as tf
 from tensorflow import keras
 
 from keras_cv.metrics.coco.mean_average_precision import COCOMeanAveragePrecision
-
+from keras_cv.metrics.coco.iou import compute_ious_for_image
 
 class COCOMeanAveragePrecisionTest(tf.test.TestCase):
+
     def test_runs_inside_model(self):
         i = keras.layers.Input((None, None, 6))
         model = keras.Model(i, i)
@@ -41,3 +42,59 @@ class COCOMeanAveragePrecisionTest(tf.test.TestCase):
         model.evaluate(y_pred, y_true)
 
         self.assertAllEqual(recall.result(), 1.0)
+
+    def test_finds_one_box_two_detections(self):
+        recall = COCOMeanAveragePrecision(
+            max_detections=100,
+            category_ids=[1],
+            area_range=(0, 64**2),
+        )
+
+        # These would match if they were in the area range
+        y_true = np.array([[[0, 0, 10, 10, 1]]]).astype(np.float32)
+        y_pred = np.array([[[0, 0, 10, 10, 1, 1.0], [5, 5, 10, 10, 1, 0.9]]]).astype(
+            np.float32
+        )
+        recall.update_state(tf.constant(y_true), tf.constant(y_pred))
+
+        self.assertAllEqual(recall.result(), 0.5)
+
+
+    def test_finds_in_one_category(self):
+        recall = COCOMeanAveragePrecision(
+            max_detections=100,
+            category_ids=[1, 2],
+            area_range=(0, 64**2),
+        )
+
+        # These would match if they were in the area range
+        y_true = np.array([[[0, 0, 10, 10, 1], [0, 0, 10, 10, 2]]]).astype(np.float32)
+        y_pred = np.array([[[0, 0, 10, 10, 1, 1.0]]]).astype(
+            np.float32
+        )
+
+        recall.update_state(tf.constant(y_true), tf.constant(y_pred))
+
+        self.assertAllEqual(recall.result(), 0.5)
+
+
+    def test_finds_in_one_threshold(self):
+        recall = COCOMeanAveragePrecision(
+            iou_thresholds=[0.5, 0.99],
+            recall_thresholds=[0, 0.6],
+            max_detections=100,
+            category_ids=[1],
+            area_range=(0, 64**2),
+        )
+
+        # These would match if they were in the area range
+        y_true = np.array([[[0, 0, 10, 10, 1]]]).astype(np.float32)
+        y_pred = np.array([[[1, 1, 10, 10, 1, 1.0]]]).astype(
+            np.float32
+        )
+
+        recall.update_state(tf.constant(y_true), tf.constant(y_pred))
+
+        self.assertAllEqual(recall.result(), 0.5)
+
+
