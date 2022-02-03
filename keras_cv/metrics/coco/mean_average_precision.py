@@ -21,6 +21,10 @@ class COCOMeanAveragePrecision(COCOBase):
     """COCOMeanAveragePrecision computes MaP.
 
     Args:
+        iou_thresholds: defaults to [0.5:0.05:0.95].
+        category_ids: no default, users must provide.
+        area_range: area range to consider bounding boxes in. Defaults to all.
+        max_detections: number of maximum detections a model is allowed to make.
         recall_thresholds: List of floats.  Defaults to [0:.01:1].
     """
 
@@ -43,12 +47,10 @@ class COCOMeanAveragePrecision(COCOBase):
         )
         precisions = tf.math.divide_no_nan(self.true_positives, self.false_positives + self.true_positives)
 
-        tf.print("Recalls", tf.shape(recalls))
-        tf.print("Precisions", tf.shape(precisions))
         precisions_at_recall  = tf.TensorArray(tf.float32, size=self.num_categories*self.num_recall_thresholds)
-        for category_i in range(self.num_categories):
+        for category_i in tf.range(self.num_categories):
             inds = tf.searchsorted(recalls[:, category_i], self.recall_thresholds, side='left')
-            for recall_i in range(self.num_recall_thresholds):
+            for recall_i in tf.range(self.num_recall_thresholds):
                 if recall_i > tf.shape(inds)[0]:
                     break
                 threshold = inds[recall_i]
