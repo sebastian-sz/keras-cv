@@ -14,30 +14,32 @@
 import numpy as np
 import tensorflow as tf
 
-from keras_cv.layers.preprocessing.posterization import Posterization
+from keras_cv.layers.preprocessing.random_posterization import (
+    RandomPosterization,
+)
 
 
-class PosterizationTest(tf.test.TestCase):
+class RandomPosterizationTest(tf.test.TestCase):
     rng = tf.random.Generator.from_non_deterministic_state()
 
     def test_raises_error_on_invalid_bits_parameter(self):
         invalid_values = [-1, 0, 9, 24]
         for value in invalid_values:
             with self.assertRaises(ValueError):
-                Posterization(bits=value, value_range=[0, 1])
+                RandomPosterization(bits_factor=value, value_range=[0, 1])
 
     def test_raises_error_on_invalid_value_range(self):
         invalid_ranges = [(1,), [1, 2, 3]]
         for value_range in invalid_ranges:
             with self.assertRaises(ValueError):
-                Posterization(bits=1, value_range=value_range)
+                RandomPosterization(bits_factor=1, value_range=value_range)
 
     def test_single_image(self):
         bits = self._get_random_bits()
         dummy_input = self.rng.uniform(shape=(224, 224, 3), maxval=256)
         expected_output = self._calc_expected_output(dummy_input, bits=bits)
 
-        layer = Posterization(bits=bits, value_range=[0, 255])
+        layer = RandomPosterization(bits_factor=bits, value_range=[0, 255])
         output = layer(dummy_input)
 
         self.assertAllEqual(output, expected_output)
@@ -54,7 +56,9 @@ class PosterizationTest(tf.test.TestCase):
             self._calc_expected_output(dummy_input * 255, bits=bits) / 255
         )
 
-        layer = Posterization(bits=bits, value_range=[0, 1])
+        layer = RandomPosterization(
+            bits_factor=(bits, bits), value_range=[0, 1]
+        )
         output = layer(dummy_input)
 
         self.assertAllClose(output, expected_output)
@@ -68,20 +72,33 @@ class PosterizationTest(tf.test.TestCase):
             expected_output.append(self._calc_expected_output(image, bits=bits))
         expected_output = tf.stack(expected_output)
 
-        layer = Posterization(bits=bits, value_range=[0, 255])
+        layer = RandomPosterization(
+            bits_factor=(bits, bits), value_range=[0, 255]
+        )
         output = layer(dummy_input)
 
         self.assertAllEqual(output, expected_output)
 
     def test_works_with_xla(self):
         dummy_input = self.rng.uniform(shape=(2, 224, 224, 3))
-        layer = Posterization(bits=4, value_range=[0, 1])
+        layer = RandomPosterization(bits_factor=4, value_range=[0, 1])
 
         @tf.function(jit_compile=True)
         def apply(x):
             return layer(x)
 
         apply(dummy_input)
+
+    def test_applies_augmentations_independently_per_sample(self):
+        image = tf.random.uniform((32, 32, 3), minval=0, maxval=255)
+        images = tf.stack([image, image])
+
+        layer = RandomPosterization(
+            value_range=(0, 255), bits_factor=8, seed=1234
+        )
+        outputs = layer(images)
+
+        self.assertNotAllClose(outputs[0], outputs[1])
 
     @staticmethod
     def _calc_expected_output(image, bits):

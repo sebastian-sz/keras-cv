@@ -23,8 +23,8 @@ CONSISTENT_OUTPUT_TEST_CONFIGURATIONS = [
     ("Grayscale", layers.Grayscale, {}),
     ("GridMask", layers.GridMask, {}),
     (
-        "Posterization",
-        layers.Posterization,
+        "RandomPosterization",
+        layers.RandomPosterization,
         {"bits": 3, "value_range": (0, 255)},
     ),
     (

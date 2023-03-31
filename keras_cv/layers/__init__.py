@@ -40,7 +40,6 @@ from keras_cv.layers.preprocessing.jittered_resize import JitteredResize
 from keras_cv.layers.preprocessing.maybe_apply import MaybeApply
 from keras_cv.layers.preprocessing.mix_up import MixUp
 from keras_cv.layers.preprocessing.mosaic import Mosaic
-from keras_cv.layers.preprocessing.posterization import Posterization
 from keras_cv.layers.preprocessing.rand_augment import RandAugment
 from keras_cv.layers.preprocessing.random_aspect_ratio import RandomAspectRatio
 from keras_cv.layers.preprocessing.random_augmentation_pipeline import (
@@ -67,6 +66,9 @@ from keras_cv.layers.preprocessing.random_gaussian_blur import (
 )
 from keras_cv.layers.preprocessing.random_hue import RandomHue
 from keras_cv.layers.preprocessing.random_jpeg_quality import RandomJpegQuality
+from keras_cv.layers.preprocessing.random_posterization import (
+    RandomPosterization,
+)
 from keras_cv.layers.preprocessing.random_rotation import RandomRotation
 from keras_cv.layers.preprocessing.random_saturation import RandomSaturation
 from keras_cv.layers.preprocessing.random_sharpness import RandomSharpness

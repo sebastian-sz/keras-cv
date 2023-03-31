@@ -54,8 +54,8 @@ class SerializationTest(tf.test.TestCase, parameterized.TestCase):
             {"width_factor": (0, 0.5), "height_factor": 0.5},
         ),
         (
-            "Posterization",
-            cv_layers.Posterization,
+            "RandomPosterization",
+            cv_layers.RandomPosterization,
             {"bits": 3, "value_range": (0, 255)},
         ),
         (

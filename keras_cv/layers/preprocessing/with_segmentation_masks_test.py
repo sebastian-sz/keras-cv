@@ -23,8 +23,8 @@ TEST_CONFIGURATIONS = [
     ("Grayscale", preprocessing.Grayscale, {}),
     ("GridMask", preprocessing.GridMask, {}),
     (
-        "Posterization",
-        preprocessing.Posterization,
+        "RandomPosterization",
+        preprocessing.RandomPosterization,
         {"bits": 3, "value_range": (0, 255)},
     ),
     (
